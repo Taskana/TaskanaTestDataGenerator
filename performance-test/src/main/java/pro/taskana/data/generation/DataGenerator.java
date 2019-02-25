@@ -42,7 +42,7 @@ public class DataGenerator {
 
     /**
      * Generate, persist and export test data.
-     * 
+     *
      * @param args
      * @throws Exception
      */
@@ -72,8 +72,8 @@ public class DataGenerator {
     private static DataWrapper buildDomainA() throws Exception {
         // Build workbaskets
         WorkbasketStructureBuilder structureBuilder = new WorkbasketStructureBuilder("A");
-        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(1);
-        List<WorkbasketWrapper> layer0 = structureBuilder.newLayer().withWb(1).withNumberOfDistTargets(1)
+        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(50);
+        List<WorkbasketWrapper> layer0 = structureBuilder.newLayer().withWb(5).withNumberOfDistTargets(10)
                 .selectFrom(personalWorkbaskets).build();
         List<WorkbasketWrapper> uppermostLayer = structureBuilder.newLayer().withWb(1).withDistTargets(layer0).build();
         persistDomain(structureBuilder);
@@ -83,14 +83,14 @@ public class DataGenerator {
                 "A");
 
         // Build tasks
-        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 1);
+        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 150000);
 
         WorkbasketWrapper root = uppermostLayer.iterator().next();
         List<WorkbasketWrapper> wbsWithTasks = new ArrayList<>(root.getDirectOrIndirectChildren());
         wbsWithTasks.add(root);
 
-        List<TaskWrapper> tasks = taskBuilder.affect(wbsWithTasks).addTasks(TaskState.COMPLETED, 1)
-                .addTasks(TaskState.CLAIMED, 1).addTasks(TaskState.READY, 1).build();
+        List<TaskWrapper> tasks = taskBuilder.affect(wbsWithTasks).addTasks(TaskState.COMPLETED, 13400)
+                .addTasks(TaskState.CLAIMED, 6700).addTasks(TaskState.READY, 6700).build();
         taskana.createTasks(tasks);
 
         return new DataWrapper(structureBuilder.getGeneratedWorkbaskets(), tasks,
@@ -100,13 +100,13 @@ public class DataGenerator {
     private static DataWrapper buildDomainB() throws Exception {
         WorkbasketStructureBuilder structureBuilder = new WorkbasketStructureBuilder("B");
 
-        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(1);
+        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(100);
 
-        List<WorkbasketWrapper> layer0 = structureBuilder.newLayer().withWb(1).withNumberOfDistTargets(1)
+        List<WorkbasketWrapper> layer0 = structureBuilder.newLayer().withWb(20).withNumberOfDistTargets(5)
                 .selectFrom(personalWorkbaskets).build();
         ElementStack<WorkbasketWrapper> layer0Wbs = new ElementStack<>(layer0);
 
-        List<WorkbasketWrapper> layer1 = structureBuilder.newLayer().withWb(1).withNumberOfDistTargets(1)
+        List<WorkbasketWrapper> layer1 = structureBuilder.newLayer().withWb(4).withNumberOfDistTargets(5)
                 .selectFrom(layer0Wbs).build();
 
         List<WorkbasketWrapper> uppermostLayer = structureBuilder.newLayer().withWb(1).withDistTargets(layer1).build();
@@ -122,9 +122,9 @@ public class DataGenerator {
         wbsWithTasks.add(root);
 
         // Build tasks
-        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 1);
-        List<TaskWrapper> tasks = taskBuilder.affect(wbsWithTasks).addTasks(TaskState.COMPLETED, 1)
-                .addTasks(TaskState.CLAIMED, 1).addTasks(TaskState.READY, 1).withAttachments(1).build();
+        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 50000);
+        List<TaskWrapper> tasks = taskBuilder.affect(wbsWithTasks).addTasks(TaskState.COMPLETED, 2000)
+                .addTasks(TaskState.CLAIMED, 1000).addTasks(TaskState.READY, 1000).withAttachments(1).build();
 
         taskana.createTasks(tasks);
         return new DataWrapper(structureBuilder.getGeneratedWorkbaskets(), tasks,
@@ -134,18 +134,18 @@ public class DataGenerator {
     private static DataWrapper buildDomainC() throws Exception {
         WorkbasketStructureBuilder structureBuilder = new WorkbasketStructureBuilder("C");
 
-        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(99);
+        ElementStack<WorkbasketWrapper> personalWorkbaskets = structureBuilder.createSimpleWorkbaskets(28125);
 
-        List<WorkbasketWrapper> layer0FwdTo10 = structureBuilder.newLayer().withWb(18).withNumberOfDistTargets(1)
+        List<WorkbasketWrapper> layer0FwdTo10 = structureBuilder.newLayer().withWb(1875).withNumberOfDistTargets(15)
                 .selectFrom(personalWorkbaskets).build();
 
         ElementStack<WorkbasketWrapper> layer1Wb = new ElementStack<>(layer0FwdTo10);
 
-        List<WorkbasketWrapper> layer2FwdTo10 = structureBuilder.newLayer().withWb(7).withNumberOfDistTargets(2)
+        List<WorkbasketWrapper> layer2FwdTo10 = structureBuilder.newLayer().withWb(75).withNumberOfDistTargets(25)
                 .selectFrom(layer1Wb).build();
         ElementStack<WorkbasketWrapper> layer2Wb = new ElementStack<>(layer2FwdTo10);
 
-        List<WorkbasketWrapper> uppermostLayer = structureBuilder.newLayer().withWb(3).withNumberOfDistTargets(2)
+        List<WorkbasketWrapper> uppermostLayer = structureBuilder.newLayer().withWb(3).withNumberOfDistTargets(25)
                 .selectFrom(layer2Wb).build();
 
         structureBuilder.createUserWithAccessTo("superUser", structureBuilder.getGeneratedWorkbaskets(),
@@ -161,18 +161,18 @@ public class DataGenerator {
         List<WorkbasketWrapper> wbsWith2Attachments = uppermostLayer.get(2).getDirectOrIndirectChildren();
 
         // Build tasks
-        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 300);
+        TaskBuilder taskBuilder = new TaskBuilder(classificationsByType, 300000);
 
-        List<TaskWrapper> tasks = taskBuilder.affect(wbsWith0Attachments).addTasks(TaskState.COMPLETED, 5)
-                .addTasks(TaskState.CLAIMED, 2).addTasks(TaskState.READY, 2).withAttachments(0).build();
+        List<TaskWrapper> tasks = taskBuilder.affect(wbsWith0Attachments).addTasks(TaskState.COMPLETED, 50)
+                .addTasks(TaskState.CLAIMED, 25).addTasks(TaskState.READY, 25).withAttachments(0).build();
         taskana.createTasks(tasks);
 
-        tasks = taskBuilder.affect(wbsWith1Attachment).addTasks(TaskState.COMPLETED, 5).addTasks(TaskState.CLAIMED, 2)
-                .addTasks(TaskState.READY, 2).withAttachments(1).build();
+        tasks = taskBuilder.affect(wbsWith1Attachment).addTasks(TaskState.COMPLETED, 50).addTasks(TaskState.CLAIMED, 25)
+                .addTasks(TaskState.READY, 25).withAttachments(1).build();
         taskana.createTasks(tasks);
 
-        tasks = taskBuilder.affect(wbsWith2Attachments).addTasks(TaskState.COMPLETED, 5)
-                .addTasks(TaskState.CLAIMED, 2).addTasks(TaskState.READY, 2).withAttachments(2).build();
+        tasks = taskBuilder.affect(wbsWith2Attachments).addTasks(TaskState.COMPLETED, 50)
+                .addTasks(TaskState.CLAIMED, 25).addTasks(TaskState.READY, 25).withAttachments(2).build();
         taskana.createTasks(tasks);
         return new DataWrapper(structureBuilder.getGeneratedWorkbaskets(), tasks,
                 classificationsByType.values().stream().flatMap(List::stream).collect(Collectors.toList()));
